@@ -4,5 +4,5 @@ you can merge youtube video's subtitles in multiple language,it serves .srt and 
 input your video url and which language's subtitles you want
 
 Ex.
-https://www.youtube.com/watch?v=0t3ch-UAbo0 (enter)
+https://www.youtube.com/watch?v=0t3ch-UAbo0 *enter*
 en ja ...etc.(plz check ISO 639-1)
