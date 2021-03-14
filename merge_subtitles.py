@@ -96,8 +96,9 @@ def main():
             count = count + 1
 
     edit_filecontent(count)
-    merge_subs(count)
-    convert_txt()
+    if count >= 3:
+        merge_subs(count)
+        convert_txt()
     add_folder(url)
     path2 = add_folder(url)
     files_move(Path,path2)
