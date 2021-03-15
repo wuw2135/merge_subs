@@ -11,7 +11,7 @@ def edit_filecontent():
     all_file_list = os.listdir(Path)
 
     for file_name in all_file_list:
-        fname = os.path.splitext(file_name)[0]
+        fname = os.path.splitext(file_name)[0].split(".")[-1]
         ftype = os.path.splitext(file_name)[1]
         new_filename = fname+r".srt"
         if ftype == r".vtt":
