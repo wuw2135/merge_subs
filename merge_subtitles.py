@@ -41,7 +41,7 @@ def edit_filecontent():
                             
     return Path,all_file_list
 
-def merge_subs(count,all_file_list):
+def merge_subs(all_file_list):
     mergesub = list()
     for file_name in all_file_list:
         ftype = os.path.splitext(file_name)[1]
@@ -104,7 +104,7 @@ def main():
             count = count +1
 
     if count >= 3:
-        merge_subs(count,all_file_list)
+        merge_subs(all_file_list)
         convert_txt()
     
     add_folder(url)
