@@ -1,4 +1,4 @@
-# merge_subs_create_lyrics
+# merge_subs
 you can merge youtube video's subtitles in multiple language,it serves .srt and .txt that without timelines in the same time
 # How to use?
 input your video url and which language's subtitles you want
