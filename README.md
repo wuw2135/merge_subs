@@ -1,7 +1,7 @@
 # merge_subs
 you can merge youtube video's subtitles in multiple language,it serves .srt and .txt that without timelines in the same time
 # What you need?
-'pip install youtube_dl / srt / pytube
+'pip install youtube_dl / srt / pytube'
 # How to use?
 input your video url and which language's subtitles you want
 
