@@ -76,9 +76,17 @@ def files_move(Path,path2):
 def convert_txt():
     f = open("merge.srt","r",encoding="utf-8")
     srtfile = list(srt.parse(f, ignore_errors=False))
+    timedetect = srtfile[0].start
     with open("lyrics.txt","a",encoding="utf-8") as txtfile:
         for i in range (len(srtfile)):
-            txtfile.write(srtfile[i].content+"\n")
+            if i+1 < len(srtfile):
+                if srtfile[i+1].start - timedetect >= timedelta(seconds=1):
+                    txtfile.write(srtfile[i].content+"\n\n")
+                    timedetect = srtfile[i+1].start
+                else:
+                    txtfile.write(srtfile[i].content+"\n")
+            else:
+                txtfile.write(srtfile[i].content+"\n")
     f.close
 
 
