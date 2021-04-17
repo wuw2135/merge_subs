@@ -16,14 +16,11 @@ def edit_filecontent():
         new_filename = fname+r".srt"
         if ftype == r".vtt":
             os.rename(os.path.join(Path, file_name), os.path.join(Path, new_filename))
-            filein = open(new_filename,"r",encoding="utf-8")
-            a = filein.readlines()
-            fileout = open(new_filename,"w",encoding="utf-8")
-            b = "".join(a[4:])
-            fileout.write(b)
-
-            filein.close()
-            fileout.close()
+            with open(new_filename,"r",encoding="utf-8") as filein:
+                a = filein.readlines()
+            with open(new_filename,"w",encoding="utf-8") as fileout:
+                b = "".join(a[4:])
+                fileout.write(b)
 
             f = open(new_filename,encoding="utf-8")
             index = 1
