@@ -51,14 +51,14 @@ def merge_subs(all_file_list):
                 if filecount == 1:
                     for i in range (len(mergesub_list)):
                         mergesub.append(mergesub_list[i])
-                else:
-                    if len(mergesub_list) > len(mergesub):
-                        for i in range (len(mergesub_list)):
-                            for j in range (len(mergesub)):
-                                startflag = mergesub[j].start
-                                endflag = mergesub[j].end
-                                start = mergesub_list[i].start
-                                end = mergesub_list[i].end
+
+                    def langfixed(subtitle_1,subtitle_2):
+                        for i in range (len(subtitle_2)):
+                            for j in range (len(subtitle_1)):
+                                startflag = subtitle_1[j].start
+                                endflag = subtitle_1[j].end
+                                start = subtitle_2[i].start
+                                end = subtitle_2[i].end
                                 
                                 if j == 0:
                                     if start <= startflag and startflag < end < endflag:
@@ -121,82 +121,20 @@ def merge_subs(all_file_list):
                                     if start < startflag and end < startflag:
                                         mergesub.insert(j,mergesub_list[i])
                                         break
+                else:
+                    if len(mergesub_list) > len(mergesub):
+                        langfixed(mergesub,mergesub_list)
 
                     else:
-                        for i in range (len(mergesub)):
-                            for j in range (len(mergesub_list)):
-                                startflag = mergesub_list[j].start
-                                endflag = mergesub_list[j].end
-                                start = mergesub[i].start
-                                end = mergesub[i].end
-
-                                if j == 0:
-                                    if start <= startflag and startflag < end < endflag:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if start <= startflag and endflag <= end:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if startflag < start < endflag and endflag <= end < mergesub[j+1].start:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if startflag < start < endflag and endflag <= end:
-                                        if end - mergesub[j+2].start > timedelta(microseconds=0):
-                                            mergesub[j+1].content = mergesub[j+1].content + "\n" +  mergesub_list[i].content
-                                            break
-                                        if endflag - start > end - mergesub[j+1].start:
-                                            mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                            break
-                                        else:
-                                            mergesub[j+1].content = mergesub[j+1].content + "\n" +  mergesub_list[i].content
-                                            break
-                                        if endflag - start == end - mergesub[j+1].start:
-                                            mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                            break
-                                    if startflag <= start and end <= endflag:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if start < startflag and end < startflag:
-                                        mergesub.insert(j,mergesub_list[i])
-                                        break
-
-                                else:
-                                    if mergesub[j-1].end < start <= startflag and startflag < end < endflag:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if start <= startflag and endflag <= end:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if startflag < start < endflag and endflag <= end < mergesub[j+1].start:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if startflag < start < endflag and endflag <= end:
-                                        if j+2 < len(mergesub):
-                                            if end - mergesub[j+2].start > timedelta(microseconds=0):
-                                                mergesub[j+1].content = mergesub[j+1].content + "\n" +  mergesub_list[i].content
-                                                break
-                                        if j+1 < len(mergesub):
-                                            if endflag - start > end - mergesub[j+1].start:
-                                                mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                                break
-                                            else:
-                                                mergesub[j+1].content = mergesub[j+1].content + "\n" +  mergesub_list[i].content
-                                                break
-                                            if endflag - start == end - mergesub[j+1].start:
-                                                mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                                break
-                                    if startflag <= start and end <= endflag:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if start < startflag and end < startflag:
-                                        mergesub.insert(j,mergesub_list[i])
-                                        break
+                        langfixed(mergesub_list,mergesub)
                         
     merge = list(srt.sort_and_reindex(mergesub))
     
     total_file = open("merge.srt","w",encoding="utf-8")
     total_file.writelines(srt.compose(merge))
     total_file.close()
+
+
 
 def add_folder(url):
     yt = YouTube(url)
