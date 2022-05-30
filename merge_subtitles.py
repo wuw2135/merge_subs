@@ -1,10 +1,82 @@
-import youtube_dl
+from __future__ import print_function
+from fileinput import filename
+from yt_dlp import YoutubeDL
 from datetime import timedelta
 import srt
 import os
 import shutil
 from pytube import YouTube
 import re
+
+def langfixed(subtitle_1,subtitle_2):
+    for i in range (len(subtitle_2)):
+        for j in range (len(subtitle_1)):
+            startflag = subtitle_1[j].start
+            endflag = subtitle_1[j].end
+            start = subtitle_2[i].start
+            end = subtitle_2[i].end
+            
+            if j == 0:
+                if start <= startflag and startflag < end < endflag:
+                    subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                    break
+                if start <= startflag and endflag <= end:
+                    subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                    break
+                if startflag < start < endflag and endflag <= end < subtitle_1[j+1].start:
+                    subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                    break
+                if startflag < start < endflag and endflag <= end:
+                    if end - subtitle_1[j+2].start > timedelta(microseconds=0):
+                        subtitle_1[j+1].content += "\n" +  subtitle_2[i].content
+                        break
+                    if endflag - start > end - subtitle_1[j+1].start:
+                        subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                        break
+                    else:
+                        subtitle_1[j+1].content += "\n" +  subtitle_2[i].content
+                        break
+                    if endflag - start == end - subtitle_1[j+1].start:
+                        subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                        break
+                if startflag <= start and end <= endflag:
+                    subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                    break
+                if start < startflag and end < startflag:
+                    subtitle_1.insert(j,subtitle_2[i])
+
+            else:
+                if subtitle_1[j-1].end < start <= startflag and startflag < end < endflag:
+                    subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                    break
+                if start <= startflag and endflag <= end:
+                    subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                    break
+                if startflag < start < endflag and endflag <= end < subtitle_1[j+1].start:
+                    subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                    break
+                if startflag < start < endflag and endflag <= end:
+                    if j+2 < len(subtitle_1):
+                        if end - subtitle_1[j+2].start > timedelta(microseconds=0):
+                            subtitle_1[j+1].content += "\n" +  subtitle_2[i].content
+                            break
+                    if j+1 < len(subtitle_1):
+                        if endflag - start > end - subtitle_1[j+1].start:
+                            subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                            break
+                        else:
+                            subtitle_1[j+1].content += "\n" +  subtitle_2[i].content
+                            break
+                        if endflag - start == end - subtitle_1[j+1].start:
+                            subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                            break
+                if startflag <= start and end <= endflag:
+                    subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                    break
+                if start < startflag and end < startflag:
+                    subtitle_1.insert(j,subtitle_2[i])
+
+
 
 def edit_filecontent():
     Path = os.getcwd() 
@@ -19,7 +91,7 @@ def edit_filecontent():
             with open(new_filename,"r",encoding="utf-8") as filein:
                 a = filein.readlines()
             with open(new_filename,"w",encoding="utf-8") as fileout:
-                b = "".join(a[4:])
+                b = "".join(a[3:])
                 fileout.write(b)
 
             f = open(new_filename,encoding="utf-8")
@@ -51,82 +123,9 @@ def merge_subs(all_file_list):
                 if filecount == 1:
                     for i in range (len(mergesub_list)):
                         mergesub.append(mergesub_list[i])
-
-                    def langfixed(subtitle_1,subtitle_2):
-                        for i in range (len(subtitle_2)):
-                            for j in range (len(subtitle_1)):
-                                startflag = subtitle_1[j].start
-                                endflag = subtitle_1[j].end
-                                start = subtitle_2[i].start
-                                end = subtitle_2[i].end
-                                
-                                if j == 0:
-                                    if start <= startflag and startflag < end < endflag:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if start <= startflag and endflag <= end:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if startflag < start < endflag and endflag <= end < mergesub[j+1].start:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if startflag < start < endflag and endflag <= end:
-                                        if end - mergesub[j+2].start > timedelta(microseconds=0):
-                                            mergesub[j+1].content = mergesub[j+1].content + "\n" +  mergesub_list[i].content
-                                            break
-                                        if endflag - start > end - mergesub[j+1].start:
-                                            mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                            break
-                                        else:
-                                            mergesub[j+1].content = mergesub[j+1].content + "\n" +  mergesub_list[i].content
-                                            break
-                                        if endflag - start == end - mergesub[j+1].start:
-                                            mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                            break
-                                    if startflag <= start and end <= endflag:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if start < startflag and end < startflag:
-                                        mergesub.insert(j,mergesub_list[i])
-                                        break
-
-                                else:
-                                    if mergesub[j-1].end < start <= startflag and startflag < end < endflag:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if start <= startflag and endflag <= end:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if startflag < start < endflag and endflag <= end < mergesub[j+1].start:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if startflag < start < endflag and endflag <= end:
-                                        if j+2 < len(mergesub):
-                                            if end - mergesub[j+2].start > timedelta(microseconds=0):
-                                                mergesub[j+1].content = mergesub[j+1].content + "\n" +  mergesub_list[i].content
-                                                break
-                                        if j+1 < len(mergesub):
-                                            if endflag - start > end - mergesub[j+1].start:
-                                                mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                                break
-                                            else:
-                                                mergesub[j+1].content = mergesub[j+1].content + "\n" +  mergesub_list[i].content
-                                                break
-                                            if endflag - start == end - mergesub[j+1].start:
-                                                mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                                break
-                                    if startflag <= start and end <= endflag:
-                                        mergesub[j].content = mergesub[j].content + "\n" +  mergesub_list[i].content
-                                        break
-                                    if start < startflag and end < startflag:
-                                        mergesub.insert(j,mergesub_list[i])
-                                        break
                 else:
-                    if len(mergesub_list) > len(mergesub):
-                        langfixed(mergesub,mergesub_list)
+                    langfixed(mergesub,mergesub_list)
 
-                    else:
-                        langfixed(mergesub_list,mergesub)
                         
     merge = list(srt.sort_and_reindex(mergesub))
     
@@ -168,7 +167,7 @@ def main():
         ydl_opts = {
             "writesubtitles": True,
             "subtitleslangs": [lang[i]]}
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
     edit_filecontent()
