@@ -2,7 +2,7 @@
 you can merge youtube video's subtitles in multiple language  
 it serves .srt and .txt that without timelines in the same time
 # What you need?
-●youtube_dl  
+●yt-dlp  
 ●srt  
 ●pytube  
 # How to use?
