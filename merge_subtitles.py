@@ -1,5 +1,3 @@
-from __future__ import print_function
-from fileinput import filename
 from yt_dlp import YoutubeDL
 from datetime import timedelta
 import srt
@@ -30,15 +28,16 @@ def langfixed(subtitle_1,subtitle_2):
                     if end - subtitle_1[j+2].start > timedelta(microseconds=0):
                         subtitle_1[j+1].content += "\n" +  subtitle_2[i].content
                         break
+                    if endflag - start == end - subtitle_1[j+1].start:
+                        subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                        break
                     if endflag - start > end - subtitle_1[j+1].start:
                         subtitle_1[j].content += "\n" +  subtitle_2[i].content
                         break
                     else:
                         subtitle_1[j+1].content += "\n" +  subtitle_2[i].content
                         break
-                    if endflag - start == end - subtitle_1[j+1].start:
-                        subtitle_1[j].content += "\n" +  subtitle_2[i].content
-                        break
+                    
                 if startflag <= start and end <= endflag:
                     subtitle_1[j].content += "\n" +  subtitle_2[i].content
                     break
@@ -52,24 +51,26 @@ def langfixed(subtitle_1,subtitle_2):
                 if start <= startflag and endflag <= end:
                     subtitle_1[j].content += "\n" +  subtitle_2[i].content
                     break
-                if startflag < start < endflag and endflag <= end < subtitle_1[j+1].start:
-                    subtitle_1[j].content += "\n" +  subtitle_2[i].content
-                    break
+                if j+1 < len(subtitle_1):
+                    if startflag < start < endflag and endflag <= end < subtitle_1[j+1].start:
+                        subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                        break
                 if startflag < start < endflag and endflag <= end:
                     if j+2 < len(subtitle_1):
                         if end - subtitle_1[j+2].start > timedelta(microseconds=0):
                             subtitle_1[j+1].content += "\n" +  subtitle_2[i].content
                             break
                     if j+1 < len(subtitle_1):
+                        if endflag - start == end - subtitle_1[j+1].start:
+                            subtitle_1[j].content += "\n" +  subtitle_2[i].content
+                            break
                         if endflag - start > end - subtitle_1[j+1].start:
                             subtitle_1[j].content += "\n" +  subtitle_2[i].content
                             break
                         else:
                             subtitle_1[j+1].content += "\n" +  subtitle_2[i].content
                             break
-                        if endflag - start == end - subtitle_1[j+1].start:
-                            subtitle_1[j].content += "\n" +  subtitle_2[i].content
-                            break
+                        
                 if startflag <= start and end <= endflag:
                     subtitle_1[j].content += "\n" +  subtitle_2[i].content
                     break
